@@ -29,7 +29,7 @@ function putInCart(productID, amount) {
     // Kolla hur många det finns, och ta antingen så många kunden vill ha eller så många som finns.
     amount = (amount <= products[index].amount) ? amount : products[index].amount
 
-    let length = cart.push(products[index])
+    let length = cart.push(Object.assign({}, products[index]))
 
     // Justera antalet (amount) i såväl products som i cart.
     cart[length - 1].amount = amount
