@@ -21,15 +21,17 @@ const products = [{
 let cart = []
 
 function putInCart(productID, amount) {
-    // Leta reda på rätt produkt.
-    let product = products.filter((product) => {
-        return product.id = productID
+    // Leta reda på index för rätt produkt.
+    let index = products.findIndex((prod) => {
+        return prod.id == productID
     });
-    // Kolla hur många det finns, och ta antingen så många kunden vill eller så många som finns.
-    amount = (amount <= product.amount) ? amount : product.amount
 
-    let length = cart.push(product)
+    // Kolla hur många det finns, och ta antingen så många kunden vill ha eller så många som finns.
+    amount = (amount <= products[index].amount) ? amount : products[index].amount
+
+    let length = cart.push(products[index])
+
     // Justera antalet (amount) i såväl products som i cart.
     cart[length - 1].amount = amount
-    products[]
+    products[index].amount -= amount
 }
