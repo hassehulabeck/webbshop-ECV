@@ -29,6 +29,8 @@ function putInCart(productID, amount) {
     // Kolla hur många det finns, och ta antingen så många kunden vill ha eller så många som finns.
     amount = (amount <= products[index].amount) ? amount : products[index].amount
 
+    /* Om jag bara refererar till ett objekt, så får jag bara en referens till det.
+    Med Object.assign kan jag "kopiera" över egenskaperna, och skapa ett fristående objekt. */
     let length = cart.push(Object.assign({}, products[index]))
 
     // Justera antalet (amount) i såväl products som i cart.
