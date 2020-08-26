@@ -1,24 +1,38 @@
-const products = [{
-        "id": 3,
-        "name": "Väte",
-        "price": "12.45",
-        "amount": 100
-    },
-    {
-        "id": "abc",
-        "name": "Helium",
-        "price": "13.25",
-        "amount": 3
-    },
-    {
-        "id": 0,
-        "name": "Syre",
-        "price": 20,
-        "amount": 81
-    }
-]
+const https = require('https')
+const express = require('express')
+const {
+    getHeapCodeStatistics
+} = require('v8')
+const app = express()
 
+
+let products = ""
 let cart = []
+let url = 'https://www.hulabeck.se/html/temp/products.json'
+let data = ""
+
+
+function getData() {
+    return (req, res, next) => {
+
+        // Get data from url
+        https.get(url, (res) => {
+
+            // When data comes...
+            res.on('data', (d) => {
+                data += d
+            })
+
+            // When data is finished.
+            res.on('end', () => {
+                products = JSON.parse(data)
+                next()
+            })
+        })
+    }
+
+}
+
 
 function putInCart(productID, amount) {
     // Leta reda på index för rätt produkt.
@@ -59,3 +73,11 @@ function emptyCart() {
     cart = [];
 
 }
+
+app.get('/', getData(), (req, res, next) => {
+    res.json(products.products)
+})
+
+app.listen(3000, () => {
+    console.log("lyssnar nu på 3000")
+})
