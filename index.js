@@ -1,24 +1,24 @@
-const https = require('https')
-const express = require('express')
-let app = express()
-let url = 'https://www.hulabeck.se/html/temp/products.json'
+const https = require("https");
+const express = require("express");
+let app = express();
+let url = "https://www.hulabeck.se/html/temp/products.json";
 
 let cart = [];
-let products = ''
+let products = "";
 
 function getProducts() {
     https.get(url, (res) => {
-        res.on('data', (chunk) => {
-            products += chunk
-        })
-        res.on('end', () => {
-            products = JSON.parse(products)
-            products = products.products
-        })
-        res.on('error', (err) => {
-            console.error(err)
-        })
-    })
+        res.on("data", (chunk) => {
+            products += chunk;
+        });
+        res.on("end", () => {
+            products = JSON.parse(products);
+            products = products.products;
+        });
+        res.on("error", (err) => {
+            console.error(err);
+        });
+    });
 }
 
 function addToCart(productID, amount) {
@@ -60,41 +60,61 @@ function emptyCart() {
     cart = [];
 }
 
-// express
-app.get('/', (req, res) => {
-    let slump = Math.floor(Math.random() * products.length)
+function logger(req, res, next) {
+    console.log(new Date(), req.hostname, req.originalUrl);
+    next();
+}
 
-    let output = '<h1>Iron hardware products AB</h1>'
+// express
+
+app.set("view engine", "pug");
+app.set("views", "./views");
+
+app.use("/products", logger);
+
+app.get("/", (req, res) => {
+    let slump = Math.floor(Math.random() * products.length);
+
+    let output = "<h1>Iron hardware products AB</h1>";
     output += `<h3>Utvald produkt</h3>
     <p>${products[slump].name} ${products[slump].consumerPrice}
     <br />${products[slump].description}
-    </p> `
+    </p> `;
+    res.send(output);
+});
 
-    res.send(output)
-})
-
-app.get('/products', (req, res) => {
-    let output = '<ul>'
+app.get("/products", (req, res) => {
+    let output = "<ul>";
     products.forEach((product) => {
         output += `<li>
             <a href="/products/${product.id}">${product.name}</a> 
-            ${product.consumerPrice} SEK`
-    })
-    output += '</ul>'
-    res.send(output)
-})
+            ${product.consumerPrice} SEK`;
+    });
+    output += "</ul>";
+    res.send(output);
+});
 
 // Dynamiska parametrar - : indikerar dynamisk parameter/egenskap
-app.get('/products/:productID', (req, res) => {
-    let productID = req.params.productID
+app.get("/products/:productID", (req, res) => {
+    let productID = req.params.productID;
     let product = products.find((prod) => {
-        return prod.id == productID
-    })
-    res.json(product)
-})
+        return prod.id == productID;
+    });
+    res.render("product", {
+        title: product.name,
+        price: product.consumerPrice,
+        description: product.description,
+        id: productID,
+    });
+});
 
+app.get("/products/buy/:productID", (req, res) => {
+    addToCart(req.params.productID, 1);
+    console.log(cart);
+    res.send("Du har köpt produkten");
+});
 
 app.listen(3000, () => {
-    getProducts()
-    console.log('Servern är igång')
-})
+    getProducts();
+    console.log("Servern är igång");
+});
