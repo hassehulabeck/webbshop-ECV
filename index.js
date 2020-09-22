@@ -65,11 +65,12 @@ function logger(req, res, next) {
     next();
 }
 
-// express
+// express - Routingen
 
 app.set("view engine", "pug");
 app.set("views", "./views");
 
+// Middleware för url som slutar på /products
 app.use("/products", logger);
 
 app.get("/", (req, res) => {
@@ -80,6 +81,16 @@ app.get("/", (req, res) => {
     <p>${products[slump].name} ${products[slump].consumerPrice}
     <br />${products[slump].description}
     </p> `;
+    output += `
+    <h3>Tisdag 22 september</h3>
+    <ol>
+    <li>Repetition node & express webbshop</li>
+    <li>Typescript - vad, hur, varför?</li>
+    <li>TS Setup</li>
+    <li>TS Typer</li>
+    <li>TS Interface & funktioner</li>
+    </ol>
+    `;
     res.send(output);
 });
 
